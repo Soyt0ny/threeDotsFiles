@@ -173,4 +173,6 @@ function cpprun() {
 }
 alias cpp='cpprun'
 
-start_if_needed
+if command -v tmux &> /dev/null; then
+    start_if_needed
+fi
