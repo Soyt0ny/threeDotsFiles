@@ -154,7 +154,9 @@ To validate shell scripts using ShellCheck:
 ## 🆘 Troubleshooting
 
 **1. The setup fails at `check-requirements.sh`**
-Ensure you are on an Arch-based system, have internet access, and are running the script as a normal user (not root).
+*   **Not Arch Linux**: This setup requires an Arch-based distribution.
+*   **No Internet**: Check your connection (`ping 8.8.8.8`).
+*   **Running as Root**: Run the script as a normal user with `sudo` configured.
 
 **2. The setup detects conflicts**
 If the script finds existing managers (like Oh My Zsh) or hard files where symlinks should go, it will pause. You can force it to ignore conflicts:
@@ -168,192 +170,13 @@ Run the setup with the log flag and inspect the output:
 ./setup.sh --log
 cat ~/.dotfiles-logs/setup-*.log
 ```
-sudo pacman -S shellcheck
 
-# Debian / Ubuntu
-sudo apt-get install shellcheck
-```
-
-2) Ejecutar el check:
-
+**4. Manual Backup Restoration**
+If you need to manually restore your backups instead of using the uninstaller:
 ```bash
-./scripts/check-shell.sh
-```
-
-El script falla con mensaje claro si `shellcheck` no esta instalado.
-
-## Tests
-
-Para ejecutar tests basicos:
-
-```bash
-# Ejecutar todos los tests
-./tests/run-all.sh
-
-# Ejecutar tests individuales
-./tests/test-setup-dry-run.sh
-./tests/test-requirements.sh
-./tests/test-conflicts.sh
-./tests/test-uninstall.sh
-```
-
-Los tests verifican:
-- Sintaxis de scripts
-- Ejecucion de dry-run completo
-- Pre-checks de requisitos
-- Deteccion de conflictos
-
-## Semantica de seguridad
-
-- `dry-run/apply` se mantiene en todo el flujo.
-- Preservacion segura por defecto: antes de linkear `dotfiles-core`, se backuppea a `~/.dotfiles-backup/<timestamp>/`.
-- Si usas `--preserve skip`, no se genera backup.
-
-## Dotfiles core (linkeo)
-
-`scripts/link.sh` crea symlinks para:
-
-- `configs/zsh/.zshrc` -> `~/.zshrc`
-- `configs/tmux/.tmux.conf` -> `~/.tmux.conf`
-- `configs/nvim/` -> `~/.config/nvim`
-- `configs/ghostty/` -> `~/.config/ghostty`
-
-## Politica AI CLIs
-
-La capa `ai-clis` es **solo instalacion de paquetes**.
-
-- No linkea configuraciones AI.
-- No sincroniza configuraciones AI por default.
-- `opencode` fue removido del mapping de link/sync para evitar acoplar estado local de herramientas AI.
-- `scripts/install-ai-clis-linux.sh` no acepta `--yes`: el flujo local ya es no interactivo en lo que controla el script, pero los instaladores oficiales remotos pueden mostrar prompts propios.
-
-## Configs incluidas en el repo
-
-Configs versionadas usadas por el flujo "apps + configs + cli":
-
-- `configs/zsh/.zshrc` -> `~/.zshrc` (sanitizada, sin paths hardcodeados)
-- `configs/zsh/.p10k.zsh` -> `~/.p10k.zsh` (powerlevel10k theme)
-- `configs/tmux/.tmux.conf` -> `~/.tmux.conf`
-- `configs/nvim/` (incluye `init.lua`) -> `~/.config/nvim`
-- `configs/ghostty/config` -> `~/.config/ghostty/config`
-- `configs/git/.gitconfig` -> `~/.config/git/config` (sin credenciales ni user)
-- `configs/git/user.template` - Template para tu [user] section
-
-Config adicional versionada (no linkeada por setup por politica actual):
-
-- `configs/opencode/` (placeholder documental)
-
-## Manifiestos de paquetes
-
-Estructura nueva:
-
-```text
-packages/
-|-- official.txt                  # legacy fallback
-|-- aur.txt                       # legacy fallback
-|-- layers/
-|   |-- toolchains-official.txt
-|   |-- toolchains-aur.txt
-|   |-- ai-clis-official.txt
-|   `-- ai-clis-aur.txt
-`-- profiles/
-    `-- dev.layers
-```
-
-`scripts/packages.sh` soporta:
-
-- `--layers toolchains,ai-clis` (nuevo modo por capas)
-- fallback legacy (`official.txt` + `aur.txt`) si no se pasan capas
-
-## Sync (maquina -> repo)
-
-`sync.sh` mantiene whitelist de rutas versionadas:
-
-- `~/.zshrc` -> `configs/zsh/.zshrc`
-- `~/.tmux.conf` -> `configs/tmux/.tmux.conf`
-- `~/.config/nvim/` -> `configs/nvim/`
-- `~/.config/ghostty/` -> `configs/ghostty/`
-
-Ejemplos:
-
-```bash
-./sync.sh --dry-run
-./sync.sh --apply
-./sync.sh --apply --prune
-```
-
-## Nota de post-setup
-
-`post-setup` ejecuta setup de Docker/system (enable service + grupo docker) solo si esa capa esta seleccionada.
-
-## Uninstall
-
-Si necesitas remover los dotfiles linkeados:
-
-```bash
-# Listar symlinks y removerlos con confirmacion
-./scripts/uninstall.sh
-
-# Remover sin confirmacion
-./scripts/uninstall.sh --force
-```
-
-**IMPORTANTE:** El uninstaller NO desinstala paquetes del sistema (muy peligroso). Solo remueve symlinks de dotfiles. Los paquetes deben desinstalarse manualmente si es necesario.
-
-### Restaurar backups
-
-El uninstaller detecta backups en `~/.dotfiles-backup/` y ofrece restaurar el mas reciente:
-
-```bash
-./scripts/uninstall.sh
-# Despues de remover symlinks, pregunta: "¿Restaurar backup mas reciente? (y/N)"
-```
-
-Para restaurar backups manualmente:
-
-```bash
-# Listar backups disponibles
+# List available backups
 ls -la ~/.dotfiles-backup/
 
-# Restaurar archivo especifico
-cp -a ~/.dotfiles-backup/YYYYMMDD-HHMMSS/.zshrc ~/
-
-# Restaurar todo un backup
+# Restore everything from a specific backup
 cp -a ~/.dotfiles-backup/YYYYMMDD-HHMMSS/* ~/
-```
-
-## Troubleshooting
-
-### Pre-checks fallan
-
-Si `check-requirements.sh` falla:
-
-1. **No es Arch Linux**: Este setup requiere Arch Linux
-2. **pacman no encontrado**: Instala Arch Linux o usa distro compatible
-3. **Sin conexion a internet**: Verifica tu conexion (ping 8.8.8.8)
-4. **Espacio insuficiente**: Libera espacio en `/` (minimo 2GB recomendado)
-5. **Ejecutando como root**: Ejecuta como usuario normal con sudo configurado
-6. **sudo no disponible**: Instala sudo y configura tu usuario
-
-### Conflictos detectados
-
-Si `detect-conflicts.sh` encuentra conflictos:
-
-- **Oh My Zsh detectado**: Este setup usa zsh con powerlevel10k standalone. Puedes continuar pero puede haber conflictos en `.zshrc`
-- **chezmoi/yadm detectado**: Este setup usa symlinks directos. Considera desinstalar el otro gestor primero
-- **Configs existentes**: Tus archivos actuales seran respaldados en `~/.dotfiles-backup/` antes de crear symlinks
-
-Para continuar de todas formas: responde `y` al prompt o usa `--skip-conflict-check`
-
-### Logs de instalacion
-
-Si algo falla durante el setup:
-
-```bash
-# Ejecutar con log
-./setup.sh --log
-
-# Ver log mas reciente
-ls -t ~/.dotfiles-logs/ | head -1
-cat ~/.dotfiles-logs/setup-YYYYMMDD-HHMMSS.log
 ```
