@@ -1,203 +1,173 @@
 # threeDotsFiles
 
-Bootstrap portable para maquinas Arch-family con instalacion por capas y dotfiles versionados.
+**[ OS: Arch Linux ] [ Shell: Zsh ] [ Terminal-Focused ]**
 
-## Que instala
+A portable, modular, and automated bootstrap setup for Arch-family Linux machines. It installs modern CLI tools, configures your terminal environment, and manages dotfiles through symlinks.
 
-Este setup automatiza el onboarding completo de una maquina nueva con:
+---
 
-**Herramientas CLI modernas:**
-- `bat`, `eza`, `fzf`, `ripgrep` - Modern replacements (cat, ls, find, grep)
-- `atuin`, `zoxide` - Smart shell history & navigation
-- `lazygit`, `lazydocker` - Interactive TUIs
-- `btop`, `fastfetch` - System monitoring
-- `github-cli`, `starship` - Git integration & prompt
-- `neovim`, `tmux`, `zsh` - Core dev tools
-- `docker`, `docker-compose` - Containerization
+## 📋 What's Included
 
-**Configs versionadas:**
-- `.zshrc` + `.p10k.zsh` - Shell personalizada con plugins
-- `.tmux.conf` - Multiplexor
-- `nvim/` - Editor config
-- `ghostty/` - Terminal emulator
-- `.gitconfig` - Git aliases, delta, comportamiento (sin credenciales)
-- `git/user.template` - Template para configurar tu identidad
+This setup automates the complete onboarding of a new machine. 
 
-**Opcionales:**
-- AI CLIs: OpenCode, GitHub Copilot, etc. (capa separada)
+### Core Tools & CLI Replacements
+* **Modern Utilities**: `bat` (cat), `eza` (ls), `fzf` (find), `ripgrep` (grep)
+* **Navigation & History**: `atuin` (shell history), `zoxide` (smart cd)
+* **TUIs**: `lazygit`, `lazydocker`
+* **System Monitoring**: `btop`, `fastfetch`
+* **Dev Tools**: `github-cli`, `starship` (prompt), `shellcheck`
 
-## Instalacion (3 pasos)
+### Versioned Configurations
+* **Shell**: `.zshrc` + `.p10k.zsh` (Powerlevel10k prompt)
+* **Multiplexer**: `.tmux.conf`
+* **Editor**: `nvim/` (Complete LazyVim setup)
+* **Terminal**: `ghostty/`
+* **Git**: `.gitconfig` (Aliases, delta, behavior - *no credentials included*)
 
+### Optional Add-ons
+* **AI CLIs**: OpenCode, GitHub Copilot, Gemini, Codex, Claude Code
+
+---
+
+## ⚙️ Prerequisites
+
+Before running the setup, ensure your system meets these minimum requirements:
+1. **Arch Linux** or an Arch-based distribution (Manjaro, EndeavourOS).
+2. **git** installed (`sudo pacman -S git`).
+3. Standard user account with **sudo** privileges (Do *not* run as root).
+
+---
+
+## 🚀 Installation
+
+The installation process is designed to be fully automated and safe. It will automatically backup any existing configurations before creating new symlinks.
+
+### Step 1: Clone the Repository
 ```bash
-# 1. Clonar el repo
-git clone <repo-url> threeDotsFiles
+git clone https://github.com/Soyt0ny/threeDotsFiles.git
 cd threeDotsFiles
-
-# 2. Ejecutar setup
-./setup.sh
-
-# 3. Reiniciar terminal
-exec zsh
 ```
 
-`./setup.sh` instala paquetes, linkea dotfiles y configura Docker. Por defecto ejecuta en modo apply y NO instala AI CLIs.
-
-## Despues de instalar
-
-Checklist post-instalacion:
-
+### Step 2: Run the Setup
+Run the setup script. It will check requirements, detect conflicts, and install everything.
 ```bash
-# Configurar tu identidad en git
-git config --global user.name "Tu Nombre"
-git config --global user.email "tu@email.com"
-
-# Reiniciar terminal para aplicar zsh/PATH
-exec zsh
-
-# Verificar instalacion
-./scripts/verify-setup.sh
-
-# (Opcional) Autenticar GitHub CLI
-gh auth login
-
-# (Opcional) Autenticar AI CLIs segun necesites
-# opencode auth, etc.
-```
-
-## Capas de instalacion
-
-El instalador soporta estas capas:
-
-1. `toolchains`
-2. `dotfiles-core` (`zsh`, `tmux`, `nvim`, `ghostty`)
-3. `ai-clis` (**install-only**, sin link/sync de configs)
-4. `post-setup` (docker/system setup)
-
-Por defecto se usa el perfil `dev` (`packages/profiles/dev.layers`) con esas cuatro capas.
-
-## Modulos disponibles
-
-`setup.sh` ejecuta estos modulos:
-
-- `system` - Checks + post-setup de sistema (docker)
-- `devtools` - Toolchains base
-- `ai-clis` - Capa de paquetes AI + instaladores
-- `project` - Backup + link de dotfiles del repo
-
-**Ejemplos:**
-
-```bash
-# Ejecutar solo un modulo
-./setup.sh --only devtools
-
-# Ejecutar todo excepto AI CLIs
-./setup.sh --skip ai-clis
-
-# Dry-run para ver acciones sin aplicar
-./setup.sh --dry-run
-
-# Modo no interactivo (auto-confirm)
 ./setup.sh --yes
 ```
+*(Note: To see what the script will do without making any changes, run `./setup.sh --dry-run` first).*
 
-## Flags disponibles
+### Step 3: Reload Your Environment
+```bash
+exec zsh
+```
 
-**Setup (`./setup.sh`):**
-- `--all` - Ejecuta todos los modulos (default)
-- `--only <module>` - Ejecuta solo un modulo
-- `--skip <m1,m2>` - Omite modulos
-- `--dry-run` - Muestra acciones sin aplicar cambios
-- `-y, --yes` - Modo no interactivo (auto-confirmaciones)
-- `--interactive` - Pregunta por cada modulo antes de ejecutar
-- `--log` - Guarda log completo en `~/.dotfiles-logs/`
-- `--update` - Modo actualizacion (sin backups, incremental)
-- `--skip-conflict-check` - Omite deteccion de conflictos pre-instalacion
+---
 
-**Install (`./install.sh`):**
-- `--apply` - Aplica cambios (default en setup.sh)
-- `--dry-run` - Solo previsualiza (default en install.sh)
-- `--profile <name>` - Usa perfil especifico
-- `--layers <csv>` - Override de capas explicitas
-- `--preserve <backup|skip>` - Preservacion de configs locales (default: backup)
+## 🔧 Post-Installation Checklist
 
-## Defaults explicitos: `setup.sh` vs `install.sh`
+After the setup finishes, complete these manual steps to personalize your environment:
 
-Para evitar confusion, estos son los defaults reales:
+1. **Configure Git Identity**
+   ```bash
+   git config --global user.name "Your Name"
+   git config --global user.email "your.email@example.com"
+   ```
+2. **Verify the Installation**
+   ```bash
+   ./scripts/verify-setup.sh
+   ```
+3. **Authenticate Services (Optional)**
+   ```bash
+   gh auth login
+   ```
 
-- `./setup.sh` (sin flags): `--all` + modo `apply`.
-- `./install.sh` (sin flags): modo `dry-run` + `--profile dev`.
+---
 
-En otras palabras: `setup.sh` aplica cambios por defecto; `install.sh` solo previsualiza por defecto.
+## 🔄 Updating an Existing Setup
 
-## Uso rapido
+If you pull new changes from this repository, you can safely update your system without running the full installation again.
 
 ```bash
-# Ver que haria el setup sin aplicar cambios
-./setup.sh --dry-run
+git pull origin main
+./setup.sh --update --yes
+```
+**The `--update` flag will:**
+* Skip the backup phase (assumes backups exist).
+* Only install *missing* packages incrementally.
+* Re-apply all dotfile symlinks with the latest versions.
 
-# Setup completo (default: aplica cambios)
-./setup.sh
+---
 
-# Setup no interactivo + dry-run
-./setup.sh --yes --dry-run
+## 🗑️ Uninstallation & Rollback
 
-# Setup con log completo guardado
+Tried it and want your old setup back? The uninstaller will safely remove the symlinks and restore your original backed-up configurations.
+
+```bash
+./scripts/uninstall.sh
+```
+*Important: The uninstaller does NOT remove system packages installed via pacman/yay to prevent breaking dependencies. Packages must be removed manually if desired.*
+
+---
+
+## 🛠️ Advanced Usage & Flags
+
+The `setup.sh` script is modular and accepts several flags to customize its behavior.
+
+### Execution Modes
+| Flag | Description |
+|------|-------------|
+| `--dry-run` | Shows actions without applying any changes. |
+| `-y, --yes` | Non-interactive mode (auto-confirms prompts). |
+| `--interactive` | Asks for confirmation before running each module. |
+| `--log` | Saves a complete installation log in `~/.dotfiles-logs/`. |
+
+### Module Selection
+By default, all modules are executed. You can isolate specific layers:
+| Flag | Description |
+|------|-------------|
+| `--only <module>` | Runs a specific module (e.g., `./setup.sh --only ai-clis`). |
+| `--skip <m1,m2>` | Skips specific modules (e.g., `./setup.sh --skip ai-clis`). |
+
+### Available Modules
+* `system`: OS requirements and post-setup tasks (like Docker).
+* `devtools`: Base toolchains and core CLI packages.
+* `project`: Backups existing configs and links the repo's dotfiles.
+* `ai-clis`: Installs AI CLI tools (without authentication).
+
+---
+
+## 🧪 Testing & Validation
+
+The repository includes a suite of tests to ensure everything works as expected. 
+
+To run the automated tests:
+```bash
+./tests/run-all.sh
+```
+
+To validate shell scripts using ShellCheck:
+```bash
+./scripts/check-shell.sh
+```
+
+---
+
+## 🆘 Troubleshooting
+
+**1. The setup fails at `check-requirements.sh`**
+Ensure you are on an Arch-based system, have internet access, and are running the script as a normal user (not root).
+
+**2. The setup detects conflicts**
+If the script finds existing managers (like Oh My Zsh) or hard files where symlinks should go, it will pause. You can force it to ignore conflicts:
+```bash
+./setup.sh --skip-conflict-check
+```
+
+**3. I need to see what went wrong**
+Run the setup with the log flag and inspect the output:
+```bash
 ./setup.sh --log
-
-# Correr solo un modulo
-./setup.sh --only devtools
-
-# Correr todo excepto modulos puntuales
-./setup.sh --skip ai-clis,project
-
-# --- install.sh (granular, por capas) ---
-
-# Default: dry-run + profile dev
-./install.sh
-
-# Aplicar perfil default (dev)
-./install.sh --apply
-
-# Elegir perfil
-./install.sh --dry-run --profile dev
-
-# Elegir capas explicitas (override de profile)
-./install.sh --apply --layers toolchains,dotfiles-core
-
-# Controlar preservacion de configs locales
-./install.sh --apply --layers dotfiles-core --preserve backup
-./install.sh --apply --layers dotfiles-core --preserve skip
+cat ~/.dotfiles-logs/setup-*.log
 ```
-
-## Actualizar setup existente
-
-Si ya ejecutaste el setup y quieres actualizar paquetes/configs:
-
-```bash
-# Modo update: omite backups y checks, solo instala paquetes faltantes
-./setup.sh --update
-
-# Update con dry-run para ver que instalaria
-./setup.sh --update --dry-run
-
-# Update de un solo modulo
-./setup.sh --update --only devtools
-```
-
-El modo `--update`:
-- NO ejecuta `check-requirements` ni `detect-conflicts` (asume setup inicial OK)
-- NO crea backups (asume que ya existen del setup inicial)
-- Instala solo paquetes faltantes (modo incremental)
-- Re-aplica symlinks (actualiza configs)
-
-## Shell lint reproducible
-
-No hay CI configurada en este repo. Para validar shell scripts de forma reproducible:
-
-1) Instalar `shellcheck`:
-
-```bash
-# Arch / Manjaro
 sudo pacman -S shellcheck
 
 # Debian / Ubuntu
