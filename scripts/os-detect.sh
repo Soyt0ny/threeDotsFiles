@@ -8,7 +8,7 @@ detect_os() {
       arch|manjaro|endeavouros)
         echo "arch"
         ;;
-      debian|ubuntu|linuxmint|pop)
+      debian|ubuntu|linuxmint|pop|parrot|kali)
         echo "debian"
         ;;
       *)
@@ -34,7 +34,8 @@ sys_install() {
       sudo pacman -S --needed --noconfirm "${packages[@]}"
       ;;
     debian)
-      sudo apt-get update -y && sudo apt-get install -y "${packages[@]}"
+      sudo apt-get update -y
+      sudo apt-get install -y "${packages[@]}"
       ;;
     *)
       echo "Unsupported OS for sys_install: $os" >&2
