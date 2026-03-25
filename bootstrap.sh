@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-echo "🚀 Starting threeDotsFiles bootstrap..."
+echo "🚀 Starting DotsFile_Soyt0ny bootstrap..."
 
 # Ask for sudo upfront
 sudo -v
@@ -11,10 +11,10 @@ echo "📦 Updating repositories and installing base dependencies (git, base-dev
 sudo pacman -Sy --needed --noconfirm git base-devel curl
 
 # 2. Clone the repo in the HOME directory
-REPO_DIR="$HOME/threeDotsFiles"
+REPO_DIR="$HOME/DotsFile_Soyt0ny"
 if [ ! -d "$REPO_DIR" ]; then
     echo "📥 Cloning the repository..."
-    git clone https://github.com/Soyt0ny/threeDotsFiles.git "$REPO_DIR"
+    git clone https://github.com/Soyt0ny/DotsFile_Soyt0ny.git "$REPO_DIR"
 else
     echo "✅ Repository already exists at $REPO_DIR. Updating..."
     cd "$REPO_DIR" && git pull origin main

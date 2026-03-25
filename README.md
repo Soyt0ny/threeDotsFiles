@@ -1,4 +1,4 @@
-# threeDotsFiles
+# DotsFile_Soyt0ny
 
 **[ OS: Arch Linux ] [ Shell: Zsh ] [ Terminal-Focused ]**
 
@@ -45,7 +45,7 @@ The installation process is designed to be fully automated and safe. It will aut
 ### Easy Install (Recommended)
 Run this single command in your terminal. It will install `git`, clone the repo, and start the setup automatically:
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/Soyt0ny/threeDotsFiles/main/bootstrap.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/Soyt0ny/DotsFile_Soyt0ny/main/bootstrap.sh)"
 ```
 
 ### Manual Install
@@ -54,8 +54,8 @@ If you prefer to do it manually:
 sudo pacman -S git base-devel
 
 ```bash
-git clone https://github.com/Soyt0ny/threeDotsFiles.git
-cd threeDotsFiles
+git clone https://github.com/Soyt0ny/DotsFile_Soyt0ny.git
+cd DotsFile_Soyt0ny
 ```
 
 ### Step 2: Run the Setup
