@@ -42,7 +42,17 @@ Before running the setup, ensure your system meets these minimum requirements:
 
 The installation process is designed to be fully automated and safe. It will automatically backup any existing configurations before creating new symlinks.
 
-### Step 1: Clone the Repository
+### Easy Install (Recommended)
+Run this single command in your terminal. It will install `git`, clone the repo, and start the setup automatically:
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/Soyt0ny/threeDotsFiles/main/bootstrap.sh)"
+```
+
+### Manual Install
+If you prefer to do it manually:
+```bash
+sudo pacman -S git base-devel
+
 ```bash
 git clone https://github.com/Soyt0ny/threeDotsFiles.git
 cd threeDotsFiles
