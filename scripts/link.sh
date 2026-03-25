@@ -29,6 +29,7 @@ declare -a mappings=(
   "$ROOT_DIR/configs/tmux/.tmux.conf|$HOME/.tmux.conf"
   "$ROOT_DIR/configs/nvim|$HOME/.config/nvim"
   "$ROOT_DIR/configs/ghostty|$HOME/.config/ghostty"
+  "$ROOT_DIR/configs/kitty|$HOME/.config/kitty"
   "$ROOT_DIR/configs/git/.gitconfig|$HOME/.config/git/config"
 )
 
