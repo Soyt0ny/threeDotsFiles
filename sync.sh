@@ -21,9 +21,11 @@ Sync direction is always: current machine -> repo
 
 Whitelisted mappings:
   ~/.zshrc              -> configs/zsh/.zshrc
+  ~/.p10k.zsh           -> configs/zsh/.p10k.zsh
   ~/.tmux.conf          -> configs/tmux/.tmux.conf
   ~/.config/nvim/       -> configs/nvim/
-  ~/.config/opencode/   -> configs/opencode/
+  ~/.config/ghostty/    -> configs/ghostty/
+  ~/.config/git/config  -> configs/git/.gitconfig
 EOF
 }
 
@@ -56,9 +58,11 @@ backup_created=false
 
 declare -a MAPPINGS=(
   "$HOME/.zshrc|$ROOT_DIR/configs/zsh/.zshrc|file"
+  "$HOME/.p10k.zsh|$ROOT_DIR/configs/zsh/.p10k.zsh|file"
   "$HOME/.tmux.conf|$ROOT_DIR/configs/tmux/.tmux.conf|file"
   "$HOME/.config/nvim|$ROOT_DIR/configs/nvim|dir"
-  "$HOME/.config/opencode|$ROOT_DIR/configs/opencode|dir"
+  "$HOME/.config/ghostty|$ROOT_DIR/configs/ghostty|dir"
+  "$HOME/.config/git/config|$ROOT_DIR/configs/git/.gitconfig|file"
 )
 
 log() {

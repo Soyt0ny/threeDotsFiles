@@ -1,0 +1,1 @@
+# dotfiles-core has no AUR package manifest.

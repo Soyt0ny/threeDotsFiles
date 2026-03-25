@@ -4,12 +4,17 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$ROOT_DIR/scripts/logging.sh"
 MODE="dry-run"
+AUTO_YES=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --mode)
       MODE="$2"
       shift 2
+      ;;
+    -y|--yes)
+      AUTO_YES=true
+      shift
       ;;
     *)
       log_error "Unknown option: $1"
@@ -24,6 +29,8 @@ backup_root="$HOME/.dotfiles-backup/$timestamp"
 declare -a mappings=(
   "$ROOT_DIR/configs/zsh/.zshrc|$HOME/.zshrc"
   "$ROOT_DIR/configs/tmux/.tmux.conf|$HOME/.tmux.conf"
+  "$ROOT_DIR/configs/nvim|$HOME/.config/nvim"
+  "$ROOT_DIR/configs/ghostty|$HOME/.config/ghostty"
 )
 
 backup_target() {
@@ -59,6 +66,7 @@ backup_target() {
 }
 
 log_step "Backup phase ($MODE)"
+log_info "Auto-confirm: $AUTO_YES"
 if [[ "$MODE" == "apply" ]]; then
   mkdir -p "$backup_root"
 fi

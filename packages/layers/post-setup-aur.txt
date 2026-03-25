@@ -1,0 +1,1 @@
+# post-setup has no AUR package manifest.
