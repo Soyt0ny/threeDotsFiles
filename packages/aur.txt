@@ -1,0 +1,2 @@
+carapace
+zsh-theme-powerlevel10k

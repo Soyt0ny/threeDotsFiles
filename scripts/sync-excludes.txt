@@ -1,0 +1,30 @@
+# Sensitive and state files that must not be synced into repo
+
+# VCS and OS clutter
+**/.git/**
+**/.DS_Store
+
+# Logs and volatile caches
+**/*.log
+**/tmp/**
+**/cache/**
+**/Cache/**
+
+# Potential secrets by filename
+**/*token*
+**/*secret*
+**/*credential*
+**/*auth*
+
+# Private key/cert/env material
+**/*.key
+**/*.pem
+**/*.p12
+**/*.crt
+**/*.env
+**/.env*
+
+# Session and local state
+**/history*
+**/sessions/**
+**/state/**

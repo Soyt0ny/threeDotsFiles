@@ -1,0 +1,63 @@
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.tmp
+*.bak
+
+# Shell and local histories/state
+**/.bash_history
+**/.zsh_history
+**/.python_history
+**/.lesshst
+**/.wget-hsts
+
+# Env and secrets
+.env
+.env.*
+*.secret
+*.secrets
+*.pem
+*.key
+*.p12
+*.kdbx
+*.ovpn
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+
+# SSH/GPG/credentials
+**/.ssh/
+**/.gnupg/
+**/.netrc
+**/.git-credentials
+**/.aws/
+**/.azure/
+**/.config/gcloud/
+
+# Tokens/auth/cache/state
+**/.npm/
+**/.cache/
+**/.local/state/
+**/.local/share/keyrings/
+**/.config/gh/
+**/.config/opencode/auth*
+**/.config/opencode/tokens*
+
+# Project/tool outputs
+node_modules/
+dist/
+build/
+coverage/
+*.log
+.sync-backup/
+
+# Local backups created by scripts
+**/.dotfiles-backup/
+
+# Databases and local persistence
+*.sqlite
+*.sqlite3
+*.db
