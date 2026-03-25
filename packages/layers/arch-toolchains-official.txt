@@ -20,3 +20,4 @@ btop
 fastfetch
 github-cli
 starship
+kitty

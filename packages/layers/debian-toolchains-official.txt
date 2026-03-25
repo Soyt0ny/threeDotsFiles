@@ -8,3 +8,4 @@ shellcheck
 bat
 btop
 build-essential
+kitty
