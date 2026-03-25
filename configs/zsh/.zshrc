@@ -71,10 +71,12 @@ if [[ $IS_TERMUX -eq 1 ]]; then
     # Powerlevel10k on Termux - may need manual install
     [[ -f "$PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme" ]] && source "$PREFIX/share/powerlevel10k/powerlevel10k.zsh-theme"
 else
-    source $(dirname $BREW_BIN)/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
-    source $(dirname $BREW_BIN)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-    source $(dirname $BREW_BIN)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-    source $(dirname $BREW_BIN)/share/powerlevel10k/powerlevel10k.zsh-theme
+    # Safe sourcing for Homebrew Zsh plugins to prevent crashes if missing
+    local BREW_SHARE="$(dirname $BREW_BIN)/share"
+    [[ -f "$BREW_SHARE/zsh-autocomplete/zsh-autocomplete.plugin.zsh" ]] && source "$BREW_SHARE/zsh-autocomplete/zsh-autocomplete.plugin.zsh"
+    [[ -f "$BREW_SHARE/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] && source "$BREW_SHARE/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+    [[ -f "$BREW_SHARE/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && source "$BREW_SHARE/zsh-autosuggestions/zsh-autosuggestions.zsh"
+    [[ -f "$BREW_SHARE/powerlevel10k/powerlevel10k.zsh-theme" ]] && source "$BREW_SHARE/powerlevel10k/powerlevel10k.zsh-theme"
 fi
 
 export PROJECT_PATHS="$HOME/work"
