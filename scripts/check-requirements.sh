@@ -14,14 +14,14 @@ log_info "Verificando sistema operativo..."
 source "$ROOT_DIR/scripts/os-detect.sh"
 CURRENT_OS="$(detect_os)"
 
-if [[ "$CURRENT_OS" == "unknown" ]]; then
+if [[ "$CURRENT_OS" == "arch" || "$CURRENT_OS" == "debian" || "$CURRENT_OS" == "ubuntu" ]]; then
+  log_success "Sistema operativo detectado: $CURRENT_OS"
+else
   log_error "Este setup requiere Arch Linux o Debian/Ubuntu"
   if [[ -f /etc/os-release ]]; then
     log_info "Sistema actual: $(grep '^NAME=' /etc/os-release | cut -d= -f2 | tr -d '"')"
   fi
   EXIT_CODE=1
-else
-  log_success "Sistema operativo detectado: $CURRENT_OS"
 fi
 
 # 2. Verificar gestor de paquetes

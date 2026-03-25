@@ -8,7 +8,17 @@ sudo -v
 
 # 1. Update repositories and install git + base-devel
 echo "📦 Updating repositories and installing base dependencies (git, base-devel)..."
-sudo pacman -Sy --needed --noconfirm git base-devel curl
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    if [[ "${ID:-}" == *"debian"* || "${ID_LIKE:-}" == *"debian"* || "${ID:-}" == *"ubuntu"* || "${ID:-}" == *"parrot"* ]]; then
+        sudo apt-get update -y
+        sudo apt-get install -y git build-essential curl
+    else
+        sudo pacman -Sy --needed --noconfirm git base-devel curl
+    fi
+else
+    sudo pacman -Sy --needed --noconfirm git base-devel curl
+fi
 
 # 2. Clone the repo in the HOME directory
 REPO_DIR="$HOME/DotsFile_Soyt0ny"

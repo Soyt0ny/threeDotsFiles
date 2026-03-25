@@ -4,23 +4,18 @@
 detect_os() {
   if [ -f /etc/os-release ]; then
     . /etc/os-release
-    case "$ID" in
-      arch|manjaro|endeavouros)
-        echo "arch"
-        ;;
-      debian|ubuntu|linuxmint|pop|parrot|kali)
-        echo "debian"
-        ;;
-      *)
-        if echo "${ID_LIKE:-}" | grep -q "arch"; then
-          echo "arch"
-        elif echo "${ID_LIKE:-}" | grep -qE "debian|ubuntu"; then
-          echo "debian"
-        else
-          echo "unknown"
-        fi
-        ;;
-    esac
+    
+    # Convert identifiers to lowercase for safety
+    local os_id="${ID:-}"
+    local os_id_like="${ID_LIKE:-}"
+    
+    if [[ "$os_id" == *"arch"* || "$os_id_like" == *"arch"* || "$os_id" == "manjaro" || "$os_id" == "endeavouros" ]]; then
+      echo "arch"
+    elif [[ "$os_id" == *"debian"* || "$os_id_like" == *"debian"* || "$os_id" == *"ubuntu"* || "$os_id_like" == *"ubuntu"* || "$os_id" == *"parrot"* || "$os_id" == *"kali"* || "$os_id" == *"linuxmint"* || "$os_id" == *"pop"* ]]; then
+      echo "debian"
+    else
+      echo "unknown"
+    fi
   else
     echo "unknown"
   fi
