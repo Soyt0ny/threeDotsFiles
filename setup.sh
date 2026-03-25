@@ -286,5 +286,6 @@ if [[ "$MODE" == "apply" ]]; then
   [ ] Verificar instalacion: ./scripts/verify-setup.sh
   [ ] (Opcional) Autenticar gh-cli: gh auth login
   [ ] (Opcional) Autenticar CLIs de IA segun necesites
+  [ ] (Opcional) Instalar terminal Ghostty manualmente (no soportado nativamente en Linux por Homebrew)
 CHECKLIST
 fi

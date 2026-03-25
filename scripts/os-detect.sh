@@ -12,7 +12,13 @@ detect_os() {
         echo "debian"
         ;;
       *)
-        echo "unknown"
+        if echo "${ID_LIKE:-}" | grep -q "arch"; then
+          echo "arch"
+        elif echo "${ID_LIKE:-}" | grep -qE "debian|ubuntu"; then
+          echo "debian"
+        else
+          echo "unknown"
+        fi
         ;;
     esac
   else
