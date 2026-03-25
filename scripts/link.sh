@@ -4,12 +4,17 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$ROOT_DIR/scripts/logging.sh"
 MODE="dry-run"
+AUTO_YES=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --mode)
       MODE="$2"
       shift 2
+      ;;
+    -y|--yes)
+      AUTO_YES=true
+      shift
       ;;
     *)
       log_error "Unknown option: $1"
@@ -20,9 +25,11 @@ done
 
 declare -a mappings=(
   "$ROOT_DIR/configs/zsh/.zshrc|$HOME/.zshrc"
+  "$ROOT_DIR/configs/zsh/.p10k.zsh|$HOME/.p10k.zsh"
   "$ROOT_DIR/configs/tmux/.tmux.conf|$HOME/.tmux.conf"
   "$ROOT_DIR/configs/nvim|$HOME/.config/nvim"
-  "$ROOT_DIR/configs/opencode|$HOME/.config/opencode"
+  "$ROOT_DIR/configs/ghostty|$HOME/.config/ghostty"
+  "$ROOT_DIR/configs/git/.gitconfig|$HOME/.config/git/config"
 )
 
 link_one() {
@@ -45,6 +52,7 @@ link_one() {
 }
 
 log_step "Link phase ($MODE)"
+log_info "Auto-confirm: $AUTO_YES"
 for item in "${mappings[@]}"; do
   src="${item%%|*}"
   target="${item#*|}"

@@ -4,13 +4,28 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$ROOT_DIR/scripts/logging.sh"
 MODE="dry-run"
+LAYERS=""
 YAY_BOOTSTRAP_TMP=""
+AUTO_YES=false
+INCREMENTAL=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --mode)
       MODE="$2"
       shift 2
+      ;;
+    --layers)
+      LAYERS="$2"
+      shift 2
+      ;;
+    -y|--yes)
+      AUTO_YES=true
+      shift
+      ;;
+    --incremental)
+      INCREMENTAL=true
+      shift
       ;;
     *)
       log_error "Unknown option: $1"
@@ -19,8 +34,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-official_file="$ROOT_DIR/packages/official.txt"
-aur_file="$ROOT_DIR/packages/aur.txt"
+official_file_legacy="$ROOT_DIR/packages/official.txt"
+aur_file_legacy="$ROOT_DIR/packages/aur.txt"
 
 read_packages() {
   local file="$1"
@@ -34,6 +49,55 @@ read_packages() {
     [[ -z "$line" ]] && continue
     out_ref+=("$line")
   done <"$file"
+}
+
+append_packages_from_file() {
+  local file="$1"
+  local -n out_ref="$2"
+  local -a tmp=()
+
+  [[ -f "$file" ]] || return 0
+
+  read_packages "$file" tmp
+  if ((${#tmp[@]} > 0)); then
+    out_ref+=("${tmp[@]}")
+  fi
+}
+
+dedupe_packages() {
+  local -n in_ref="$1"
+  local -n out_ref="$2"
+  local pkg
+  local -A seen=()
+  out_ref=()
+
+  for pkg in "${in_ref[@]}"; do
+    if [[ -z "${seen[$pkg]:-}" ]]; then
+      out_ref+=("$pkg")
+      seen[$pkg]=1
+    fi
+  done
+}
+
+collect_packages_by_layers() {
+  local csv="$1"
+  local layer
+  local -a requested_layers=()
+  local -a all_official=()
+  local -a all_aur=()
+
+  IFS=',' read -r -a requested_layers <<<"$csv"
+
+  for layer in "${requested_layers[@]}"; do
+    layer="${layer//[[:space:]]/}"
+    [[ -z "$layer" ]] && continue
+
+    append_packages_from_file "$ROOT_DIR/packages/layers/${layer}-official.txt" all_official
+    append_packages_from_file "$ROOT_DIR/packages/layers/${layer}-aur.txt" all_aur
+  done
+
+  dedupe_packages all_official official_packages
+  dedupe_packages all_aur aur_packages
 }
 
 run_or_preview() {
@@ -115,13 +179,60 @@ shopt -s extglob
 declare -a official_packages=()
 declare -a aur_packages=()
 
-read_packages "$official_file" official_packages
-read_packages "$aur_file" aur_packages
+if [[ -n "$LAYERS" ]]; then
+  collect_packages_by_layers "$LAYERS"
+else
+  read_packages "$official_file_legacy" official_packages
+  read_packages "$aur_file_legacy" aur_packages
+fi
 
 printf '\n'
 log_step "Package phase ($MODE)"
-log_info "Official list: $official_file"
-log_info "AUR list:      $aur_file"
+log_info "Auto-confirm: $AUTO_YES"
+log_info "Incremental: $INCREMENTAL"
+if [[ -n "$LAYERS" ]]; then
+  log_info "Layer package manifests: $LAYERS"
+else
+  log_info "Official list: $official_file_legacy"
+  log_info "AUR list:      $aur_file_legacy"
+fi
+
+# Filter packages if incremental mode
+if [[ "$INCREMENTAL" == true ]]; then
+  declare -a missing_official=()
+  declare -a missing_aur=()
+  
+  log_info "Modo incremental: verificando paquetes ya instalados..."
+  
+  # Check official packages
+  for pkg in "${official_packages[@]}"; do
+    if pacman -Q "$pkg" >/dev/null 2>&1; then
+      : # Already installed
+    else
+      missing_official+=("$pkg")
+    fi
+  done
+  
+  # Check AUR packages
+  for pkg in "${aur_packages[@]}"; do
+    if pacman -Q "$pkg" >/dev/null 2>&1; then
+      : # Already installed
+    else
+      missing_aur+=("$pkg")
+    fi
+  done
+  
+  installed_official=$((${#official_packages[@]} - ${#missing_official[@]}))
+  installed_aur=$((${#aur_packages[@]} - ${#missing_aur[@]}))
+  
+  log_info "Paquetes oficiales ya instalados: $installed_official"
+  log_info "Paquetes oficiales faltantes: ${#missing_official[@]}"
+  log_info "Paquetes AUR ya instalados: $installed_aur"
+  log_info "Paquetes AUR faltantes: ${#missing_aur[@]}"
+  
+  official_packages=("${missing_official[@]}")
+  aur_packages=("${missing_aur[@]}")
+fi
 
 if ((${#official_packages[@]} > 0)); then
   log_info "Official packages (${#official_packages[@]}): ${official_packages[*]}"
