@@ -1,14 +1,14 @@
 # DotsFile_Soyt0ny
 
-**[ OS: Arch Linux ] [ Shell: Zsh ] [ Terminal-Focused ]**
+**[ OS: Arch Linux & Debian/Ubuntu/Parrot ] [ Shell: Zsh ] [ Terminal-Focused ]**
 
-A portable, modular, and automated bootstrap setup for Arch-family Linux machines. It installs modern CLI tools, configures your terminal environment, and manages dotfiles through symlinks.
+A portable, modular, and automated bootstrap setup for Linux machines. It seamlessly detects your operating system, installs modern CLI tools, configures your terminal environment, and manages dotfiles through symlinks.
 
 ---
 
 ## 📋 What's Included
 
-This setup automates the complete onboarding of a new machine. 
+This setup automates the complete onboarding of a new machine across different Linux families. 
 
 ### Core Tools & CLI Replacements
 * **Modern Utilities**: `bat` (cat), `eza` (ls), `fzf` (find), `ripgrep` (grep)
@@ -21,7 +21,7 @@ This setup automates the complete onboarding of a new machine.
 * **Shell**: `.zshrc` + `.p10k.zsh` (Powerlevel10k prompt)
 * **Multiplexer**: `.tmux.conf`
 * **Editor**: `nvim/` (Complete LazyVim setup)
-* **Terminal**: `ghostty/`
+* **Terminal**: `kitty/` (Kanagawa theme, blur, transparency)
 * **Git**: `.gitconfig` (Aliases, delta, behavior - *no credentials included*)
 
 ### Optional Add-ons
@@ -32,8 +32,8 @@ This setup automates the complete onboarding of a new machine.
 ## ⚙️ Prerequisites
 
 Before running the setup, ensure your system meets these minimum requirements:
-1. **Arch Linux** or an Arch-based distribution (Manjaro, EndeavourOS).
-2. **git** installed (`sudo pacman -S git`).
+1. **Arch Linux** (Manjaro, EndeavourOS) OR **Debian-based** (Ubuntu, Parrot OS).
+2. **git** installed (`sudo pacman -S git` or `sudo apt install git`).
 3. Standard user account with **sudo** privileges (Do *not* run as root).
 
 ---
@@ -43,29 +43,32 @@ Before running the setup, ensure your system meets these minimum requirements:
 The installation process is designed to be fully automated and safe. It will automatically backup any existing configurations before creating new symlinks.
 
 ### Easy Install (Recommended)
-Run this single command in your terminal. It will install `git`, clone the repo, and start the setup automatically:
+Run this single command in your terminal. It will install `git`, detect your OS, clone the repo, and start the setup automatically:
 ```bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Soyt0ny/DotsFile_Soyt0ny/main/bootstrap.sh)"
 ```
 
 ### Manual Install
 If you prefer to do it manually:
-```bash
-sudo pacman -S git base-devel
 
+**1. Install Git:**
+*On Arch:* `sudo pacman -S git base-devel curl`
+*On Debian/Ubuntu:* `sudo apt update && sudo apt install git build-essential curl`
+
+**2. Clone the repository:**
 ```bash
 git clone https://github.com/Soyt0ny/DotsFile_Soyt0ny.git
 cd DotsFile_Soyt0ny
 ```
 
-### Step 2: Run the Setup
+**3. Run the Setup:**
 Run the setup script. It will check requirements, detect conflicts, and install everything.
 ```bash
 ./setup.sh --yes
 ```
 *(Note: To see what the script will do without making any changes, run `./setup.sh --dry-run` first).*
 
-### Step 3: Reload Your Environment
+**4. Reload Your Environment:**
 ```bash
 exec zsh
 ```
@@ -97,6 +100,7 @@ After the setup finishes, complete these manual steps to personalize your enviro
 If you pull new changes from this repository, you can safely update your system without running the full installation again.
 
 ```bash
+cd ~/DotsFile_Soyt0ny
 git pull origin main
 ./setup.sh --update --yes
 ```
@@ -114,7 +118,7 @@ Tried it and want your old setup back? The uninstaller will safely remove the sy
 ```bash
 ./scripts/uninstall.sh
 ```
-*Important: The uninstaller does NOT remove system packages installed via pacman/yay to prevent breaking dependencies. Packages must be removed manually if desired.*
+*Important: The uninstaller does NOT remove system packages installed via pacman/yay/brew/apt to prevent breaking dependencies. Packages must be removed manually if desired.*
 
 ---
 
@@ -139,7 +143,7 @@ By default, all modules are executed. You can isolate specific layers:
 
 ### Available Modules
 * `system`: OS requirements and post-setup tasks (like Docker).
-* `devtools`: Base toolchains and core CLI packages.
+* `devtools`: Base toolchains and core CLI packages (handles pacman/yay or apt/brew).
 * `project`: Backups existing configs and links the repo's dotfiles.
 * `ai-clis`: Installs AI CLI tools (without authentication).
 
@@ -154,17 +158,12 @@ To run the automated tests:
 ./tests/run-all.sh
 ```
 
-To validate shell scripts using ShellCheck:
-```bash
-./scripts/check-shell.sh
-```
-
 ---
 
 ## 🆘 Troubleshooting
 
 **1. The setup fails at `check-requirements.sh`**
-*   **Not Arch Linux**: This setup requires an Arch-based distribution.
+*   **Unsupported OS**: This setup requires an Arch-based or Debian-based distribution.
 *   **No Internet**: Check your connection (`ping 8.8.8.8`).
 *   **Running as Root**: Run the script as a normal user with `sudo` configured.
 
@@ -174,19 +173,15 @@ If the script finds existing managers (like Oh My Zsh) or hard files where symli
 ./setup.sh --skip-conflict-check
 ```
 
-**3. I need to see what went wrong**
+**3. Tmux colors look broken / No TrueColor**
+Tmux caches previous instances. If you update the configuration and colors look wrong, kill the server:
+```bash
+tmux kill-server
+```
+
+**4. I need to see what went wrong**
 Run the setup with the log flag and inspect the output:
 ```bash
 ./setup.sh --log
 cat ~/.dotfiles-logs/setup-*.log
-```
-
-**4. Manual Backup Restoration**
-If you need to manually restore your backups instead of using the uninstaller:
-```bash
-# List available backups
-ls -la ~/.dotfiles-backup/
-
-# Restore everything from a specific backup
-cp -a ~/.dotfiles-backup/YYYYMMDD-HHMMSS/* ~/
 ```
