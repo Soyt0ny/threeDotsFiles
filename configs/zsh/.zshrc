@@ -137,7 +137,7 @@ source $ZSH/oh-my-zsh.sh
 
 export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense'
 zstyle ':completion:*' format $'\e[2;37mCompleting %d\e[m'
-source <(carapace _carapace)
+# source <(carapace _carapace)
 
 eval "$(fzf --zsh)"
 eval "$(zoxide init zsh)"
